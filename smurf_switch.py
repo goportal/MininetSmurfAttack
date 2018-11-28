@@ -22,6 +22,7 @@ from ryu.lib.packet import packet
 from ryu.lib.packet import ethernet
 from ryu.lib.packet import ether_types
 from ryu.lib.packet import icmp
+from ryu.lib.packet import ipv4
 
 class SmurfSwitch(app_manager.RyuApp):
     OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
@@ -86,12 +87,13 @@ class SmurfSwitch(app_manager.RyuApp):
 
         # AQUI O NOSSO TRECHO DE DETECTION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-	    pkt_icmp = pkt.get_protocol(icmp.icmp)
-        if pkt_icmp:
-            self.logger.info("ICMP PCKT DETECTED \n")
-        
-        # TODO:
-        # IDENTIFICAR DEST BROADCAST E GERAR ALERTA....
+	    ls pkt_icmp = pkt.get_protocol(icmp.icmp)
+        if pkt_icmp != []:
+            self.logger.info("\nICMP PCKT DETECTED ")
+            pkt_ipv4 = pkt.get_protocol(ipv4.ipv4)
+            if pkt_ipv4.dst == "10.255.255.255":
+                self.logger.info("THE PACKAGE CAN BE AN ATTACK")
+                self.logger.info(pkt_ipv4.dst)
 
         # AQUI O NOSSO TRECHO DE DETECTION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
